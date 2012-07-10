@@ -1,0 +1,57 @@
+<project name="Build ArdorCraft API" default="buildAll" basedir="..">
+	<description>
+    	Builds the Ardorcraft API jar file
+    </description>
+
+	<target name="buildAll" depends="clean, compile, buildjar, javadoc">
+	</target>
+
+	<target name="buildjar">
+		<jar destfile="gen/ArdorCraftAPIBase.jar">
+			<fileset dir="gen/classes">
+				<include name="**/*.class" />
+			</fileset>
+			<fileset dir="../ardor3d-core/src/main/resources" />
+		</jar>
+	</target>
+
+	<target name="copyjars">
+		<copy todir="../ArdorCraftAPIExamples/lib">
+			<fileset dir="gen">
+				<include name="ArdorCraftAPI.jar" />
+				<include name="ArdorCraftAPIJavaDoc.zip" />
+			</fileset>
+		</copy>
+		<copy todir="../ArdorCraftGame/lib">
+			<fileset dir="gen">
+				<include name="ArdorCraftAPI.jar" />
+			</fileset>
+		</copy>
+		<copy todir="../ArdorCraftKryoServer/lib">
+			<fileset dir="gen">
+				<include name="ArdorCraftAPI.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="clean">
+		<delete dir="gen/classes" />
+		<mkdir dir="gen/classes" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="gen/classes" />
+		<javac srcdir="src" destdir="gen/classes" includes="**/*.java" nowarn="on">
+			<classpath>
+				<fileset dir="lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="javadoc">
+		<javadoc access="protected" author="true" classpath="lib/jinput.jar;lib/ardor3d-awt.jar;lib/lwjgl_util.jar;lib/guava-r09.jar;lib/ardor3d-lwjgl.jar;lib/lwjgl.jar;lib/ardor3d-core.jar" destdir="doc" doctitle="ArdorCraft API" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.ardorcraft.objects,com.ardorcraft.control,com.ardorcraft.collision,com.ardorcraft.util.queue,com.ardorcraft.generators,com.ardorcraft.pathfinding.calculator,com.ardorcraft.voxel,com.ardorcraft.world,com.ardorcraft.file,com.ardorcraft.util,com.ardorcraft.pathfinding,com.ardorcraft.pathfinding.heuristics,com.ardorcraft.data,com.ardorcraft.player,com.ardorcraft.util.geometryproducers" source="1.6" sourcepath="src" splitindex="true" use="true" version="true" />
+		<zip destfile="gen/ArdorCraftAPIJavaDoc.zip" basedir="doc" update="true" />
+	</target>
+</project>
