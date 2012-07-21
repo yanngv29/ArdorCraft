@@ -129,7 +129,7 @@ public abstract class ArdorBaseApplication implements Runnable, Updater, Scene {
 
         // get our framework
         final LwjglCanvasRenderer canvasRenderer = new LwjglCanvasRenderer(this);
-        _canvas = new LwjglCanvas(canvasRenderer, settings);
+        _canvas = new LwjglCanvas(settings, canvasRenderer);
         _physicalLayer = new PhysicalLayer(new LwjglKeyboardWrapper(), new LwjglMouseWrapper(),
                 new LwjglControllerWrapper(), (LwjglCanvas) _canvas);
         _mouseManager = new LwjglMouseManager();
