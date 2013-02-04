@@ -44,7 +44,7 @@ public class SomeButtonsDownPredicate implements
                 return true;
             }
         }
-        // TODO Auto-generated method stub
+        
         return false;
     }
 
