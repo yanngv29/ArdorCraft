@@ -38,12 +38,42 @@ public class FlyControl {
 	private InputTrigger _keyTrigger;
 	private final LogicalLayer layer;
 	private final PlayerBase player;
+	
+	private SomeButtonsDownPredicate moveLeftPredicate;
+	private SomeButtonsDownPredicate moveRightPredicate;
+	private SomeButtonsDownPredicate moveForwardPredicate;
+	private SomeButtonsDownPredicate moveBackPredicate;
+	private SomeButtonsDownPredicate turnLeftPredicate;
+	private SomeButtonsDownPredicate turnRightPredicate;
+	private SomeButtonsDownPredicate turnUpPredicate;
+	private SomeButtonsDownPredicate turnDownPredicate;
+	private UprightFPSMoveConfig moveConfigMember;
 
-	public FlyControl(final PlayerBase player, final LogicalLayer layer,
-			final ReadOnlyVector3 upAxis) {
+	public FlyControl(
+	        final PlayerBase player,
+	        final LogicalLayer layer,
+			final ReadOnlyVector3 upAxis,
+			UprightFPSMoveConfig moveConfigParam) {
 		_upAxis.set(upAxis);
 		this.layer = layer;
 		this.player = player;
+		moveConfigMember = moveConfigParam;
+		moveLeftPredicate =
+		        new SomeButtonsDownPredicate(moveConfigMember.MoveLeft);
+		moveRightPredicate =
+		        new SomeButtonsDownPredicate(moveConfigMember.MoveRight);
+		moveForwardPredicate =
+		        new SomeButtonsDownPredicate(moveConfigMember.MoveForward);
+		moveBackPredicate =
+		        new SomeButtonsDownPredicate(moveConfigMember.MoveBack);
+		turnLeftPredicate =
+		        new SomeButtonsDownPredicate(moveConfigMember.TurnLeft);
+		turnRightPredicate =
+		        new SomeButtonsDownPredicate(moveConfigMember.TurnRight);
+		turnUpPredicate =
+		        new SomeButtonsDownPredicate(moveConfigMember.TurnUp);
+		turnDownPredicate =
+		        new SomeButtonsDownPredicate(moveConfigMember.TurnDown);
 	}
 
 	public ReadOnlyVector3 getUpAxis() {
@@ -78,19 +108,22 @@ public class FlyControl {
 		_keyRotateSpeed = speed;
 	}
 
-	protected void move(final KeyboardState kb, final double tpf) {
+	protected void move(
+	        final TwoInputStates state,
+	        final double tpf)
+	{
 		// MOVEMENT
 		int moveFB = 0, strafeLR = 0;
-		if (kb.isDown(Key.W)) {
+		if (moveForwardPredicate.apply(state)) {
 			moveFB += 1;
 		}
-		if (kb.isDown(Key.S)) {
+		if (moveBackPredicate.apply(state)) {
 			moveFB -= 1;
 		}
-		if (kb.isDown(Key.A)) {
+		if (moveLeftPredicate.apply(state)) {
 			strafeLR += 1;
 		}
-		if (kb.isDown(Key.D)) {
+		if (moveRightPredicate.apply(state)) {
 			strafeLR -= 1;
 		}
 
@@ -113,16 +146,16 @@ public class FlyControl {
 
 		// ROTATION
 		int rotX = 0, rotY = 0;
-		if (kb.isDown(Key.UP)) {
+		if (turnUpPredicate.apply(state)) {
 			rotY -= 1;
 		}
-		if (kb.isDown(Key.DOWN)) {
+		if (turnDownPredicate.apply(state)) {
 			rotY += 1;
 		}
-		if (kb.isDown(Key.LEFT)) {
+		if (turnLeftPredicate.apply(state)) {
 			rotX += 1;
 		}
-		if (kb.isDown(Key.RIGHT)) {
+		if (turnRightPredicate.apply(state)) {
 			rotX -= 1;
 		}
 		if (rotX != 0 || rotY != 0) {
@@ -172,7 +205,12 @@ public class FlyControl {
 			final LogicalLayer layer, final ReadOnlyVector3 upAxis,
 			final boolean dragOnly) {
 
-		final FlyControl control = new FlyControl(player, layer, upAxis);
+		final FlyControl control =
+		        new FlyControl(
+		                player,
+		                layer,
+		                upAxis,
+		                new UprightFPSMoveConfig(UprightFPSMoveConfig.defaultControls.LeftHanded));
 		control.setupKeyboardTriggers(layer);
 		control.setupMouseTriggers(layer, dragOnly);
 		return control;
@@ -237,27 +275,14 @@ public class FlyControl {
 		final FlyControl control = this;
 
 		// WASD control
-		final Predicate<TwoInputStates> keysHeld = new Predicate<TwoInputStates>() {
-			Key[] keys = new Key[] { Key.W, Key.A, Key.S, Key.D, Key.LEFT,
-					Key.RIGHT, Key.UP, Key.DOWN };
-
-			@Override
-			public boolean apply(final TwoInputStates states) {
-				for (final Key k : keys) {
-					if (states.getCurrent() != null
-							&& states.getCurrent().getKeyboardState().isDown(k)) {
-						return true;
-					}
-				}
-				return false;
-			}
-		};
+		final Predicate<TwoInputStates> keysHeld =
+		        Predicates.or(moveConfigMember.createKeysDownPredicates());
 
 		final TriggerAction moveAction = new TriggerAction() {
 			@Override
 			public void perform(final Canvas source,
 					final TwoInputStates inputStates, final double tpf) {
-				control.move(inputStates.getCurrent().getKeyboardState(), tpf);
+				control.move(inputStates, tpf);
 			}
 		};
 		_keyTrigger = new InputTrigger(keysHeld, moveAction);
