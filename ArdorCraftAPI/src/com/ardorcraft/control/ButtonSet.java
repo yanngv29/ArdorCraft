@@ -20,9 +20,11 @@ public class ButtonSet
 {
     @XmlElementWrapper(name="Keys")
     @XmlElement(name="Key")
-    public ArrayList<Key> keys;
+    public ArrayList<Key> keys =
+        new ArrayList<Key>();
     
     @XmlElementWrapper(name="MouseButtons")
     @XmlElement(name="Button")
-    public ArrayList<MouseButton> mouseButtons;
+    public ArrayList<MouseButton> mouseButtons =
+        new ArrayList<MouseButton>();
 }
