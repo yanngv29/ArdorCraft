@@ -4,7 +4,7 @@ import com.ardor3d.input.Key;
 import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlRootElement;
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
+//import com.google.common.base.Predicates;
 import com.ardor3d.input.logical.TwoInputStates;
 
 @XmlRootElement(name="Controls")
@@ -53,7 +53,8 @@ public class UprightFPSMoveConfig
         }
     }
     
-    Predicate<TwoInputStates> createSomeMoveKeysDownPredicate()
+    ArrayList<Predicate<TwoInputStates> >
+        createSomeMoveKeysDownPredicates()
     {
         ArrayList<Predicate<TwoInputStates> > 
             tempPredicates =
@@ -68,10 +69,11 @@ public class UprightFPSMoveConfig
         tempPredicates.add(
                 new SomeButtonsDownPredicate(MoveRight));
         
-        return Predicates.or(tempPredicates);
+        return tempPredicates;
     }
     
-    Predicate<TwoInputStates> createSomeTurnKeyPredicate()
+    ArrayList<Predicate<TwoInputStates> >
+        createSomeTurnKeyPredicates()
     {
         ArrayList<Predicate<TwoInputStates> > 
             tempPredicates =
@@ -86,6 +88,22 @@ public class UprightFPSMoveConfig
         tempPredicates.add(
                 new SomeButtonsDownPredicate(TurnRight));
         
-        return Predicates.or(tempPredicates);
+        return tempPredicates;
+    }
+    
+    ArrayList<Predicate<TwoInputStates> >
+        createKeysDownPredicates()
+    {
+        ArrayList<Predicate<TwoInputStates> > moveKeys =
+                createSomeMoveKeysDownPredicates();
+        ArrayList<Predicate<TwoInputStates> > turnKeys =
+                createSomeTurnKeyPredicates();
+        
+        ArrayList<Predicate<TwoInputStates> > result =
+                new ArrayList<Predicate<TwoInputStates> >();
+        result.addAll(moveKeys);
+        result.addAll(turnKeys);
+        
+        return result;
     }
 }
