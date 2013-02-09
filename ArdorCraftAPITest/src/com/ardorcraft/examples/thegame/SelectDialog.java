@@ -25,9 +25,15 @@ import com.ardorcraft.generators.NiceDataGenerator;
 
 public class SelectDialog extends JDialog {
 
+    /**
+     * The version ID for the case in which
+     * the dialog is serialized.
+     */
+    private static final long serialVersionUID = 1L;
+
     private final JPanel contentPanel = new JPanel();
 
-    final Class[] generators = {
+    final Class<?>[] generators = {
             NiceDataGenerator.class, InterpolatedNoiseDataGenerator.class
     };
     final String[] textures = {
@@ -181,7 +187,7 @@ public class SelectDialog extends JDialog {
         }
     }
 
-    public Class getSelectedGenerator() {
+    public Class<?> getSelectedGenerator() {
         return generators[generatorCombo.getSelectedIndex()];
     }
 

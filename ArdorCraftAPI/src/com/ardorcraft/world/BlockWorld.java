@@ -1448,69 +1448,69 @@ public final class BlockWorld implements BlockProvider, LightProvider, ChunkModi
         }
     }
 
-    private void initiateLocalLightList(final Set<Pos> localLightOpenList, final int xStart, final int zStart,
-            final int xEnd, final int zEnd, final int height) {
-        for (int x = xStart; x < xEnd; x++) {
-            for (int z = zStart; z < zEnd; z++) {
-                final int modx = MathUtils.moduloPositive(x, width);
-                final int modz = MathUtils.moduloPositive(z, width);
+//    private void initiateLocalLightList(final Set<Pos> localLightOpenList, final int xStart, final int zStart,
+//            final int xEnd, final int zEnd, final int height) {
+//        for (int x = xStart; x < xEnd; x++) {
+//            for (int z = zStart; z < zEnd; z++) {
+//                final int modx = MathUtils.moduloPositive(x, width);
+//                final int modz = MathUtils.moduloPositive(z, width);
+//
+//                for (int y = height - 1; y >= 0; y--) {
+//                    final int block = getBlockFast(modx, y, modz);
+//                    if (blockUtil.isLocalLight(block)) {
+//                        localLightOpenList.add(new Pos(x, y, z));
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-                for (int y = height - 1; y >= 0; y--) {
-                    final int block = getBlockFast(modx, y, modz);
-                    if (blockUtil.isLocalLight(block)) {
-                        localLightOpenList.add(new Pos(x, y, z));
-                    }
-                }
-            }
-        }
-    }
-
-    private void initiateLightingOnly(final int xStart, final int zStart, final int xEnd, final int zEnd,
-            final int height) {
-        for (int x = xStart; x < xEnd; x++) {
-            for (int z = zStart; z < zEnd; z++) {
-                final int modx = MathUtils.moduloPositive(x, width);
-                final int modz = MathUtils.moduloPositive(z, width);
-
-                int currentLight = MAX_LIGHT;
-                for (int y = height - 1; y >= 0; y--) {
-                    final int block = getBlockFast(modx, y, modz);
-                    final boolean solid = blockUtil.getBlockType(block) == BlockType.Solid;
-                    setLightSolid(x, y, z, false);
-                    if (currentLight > 0) {
-                        if (block != 0 && block != WATER && solid) {
-                            setLightHeightmap(modx, modz, (short) y);
-                            setLight(lightingWrite, x, y, z, 0);
-                            setLight(localLightDataWrite, x, y, z, 0);
-                            setLightSolid(x, y, z, true);
-                            currentLight = 0;
-                        } else {
-                            setLight(lightingWrite, x, y, z, currentLight);
-                            setLight(localLightDataWrite, x, y, z, 0);
-                        }
-                        if (block == WATER) {
-                            currentLight -= 2;
-                            if (currentLight < 0) {
-                                currentLight = 0;
-                            }
-                        } else if (block != 0 && !solid) {
-                            currentLight -= 1;
-                            if (currentLight < 0) {
-                                currentLight = 0;
-                            }
-                        }
-                    } else if (block == 0 || block == WATER || !solid) {
-                        setLight(lightingWrite, x, y, z, 0);
-                        setLight(localLightDataWrite, x, y, z, 0);
-                    } else {
-                        setLight(lightingWrite, x, y, z, 0);
-                        setLight(localLightDataWrite, x, y, z, 0);
-                        setLightSolid(x, y, z, true);
-                    }
-                }
-            }
-        }
-    }
+//    private void initiateLightingOnly(final int xStart, final int zStart, final int xEnd, final int zEnd,
+//            final int height) {
+//        for (int x = xStart; x < xEnd; x++) {
+//            for (int z = zStart; z < zEnd; z++) {
+//                final int modx = MathUtils.moduloPositive(x, width);
+//                final int modz = MathUtils.moduloPositive(z, width);
+//
+//                int currentLight = MAX_LIGHT;
+//                for (int y = height - 1; y >= 0; y--) {
+//                    final int block = getBlockFast(modx, y, modz);
+//                    final boolean solid = blockUtil.getBlockType(block) == BlockType.Solid;
+//                    setLightSolid(x, y, z, false);
+//                    if (currentLight > 0) {
+//                        if (block != 0 && block != WATER && solid) {
+//                            setLightHeightmap(modx, modz, (short) y);
+//                            setLight(lightingWrite, x, y, z, 0);
+//                            setLight(localLightDataWrite, x, y, z, 0);
+//                            setLightSolid(x, y, z, true);
+//                            currentLight = 0;
+//                        } else {
+//                            setLight(lightingWrite, x, y, z, currentLight);
+//                            setLight(localLightDataWrite, x, y, z, 0);
+//                        }
+//                        if (block == WATER) {
+//                            currentLight -= 2;
+//                            if (currentLight < 0) {
+//                                currentLight = 0;
+//                            }
+//                        } else if (block != 0 && !solid) {
+//                            currentLight -= 1;
+//                            if (currentLight < 0) {
+//                                currentLight = 0;
+//                            }
+//                        }
+//                    } else if (block == 0 || block == WATER || !solid) {
+//                        setLight(lightingWrite, x, y, z, 0);
+//                        setLight(localLightDataWrite, x, y, z, 0);
+//                    } else {
+//                        setLight(lightingWrite, x, y, z, 0);
+//                        setLight(localLightDataWrite, x, y, z, 0);
+//                        setLightSolid(x, y, z, true);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     private void fillQueue(final byte[] write, final Set<Pos> openList, final int xStart, final int zStart,
             final int xEnd, final int zEnd, final int height) {

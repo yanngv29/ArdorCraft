@@ -66,6 +66,12 @@ public class GeneratorViewer {
     private final Stack<Future<?>> futureStack = new Stack<Future<?>>();
 
     private class PaintPanel extends JPanel {
+        /**
+         * Version ID for serializing a Paint
+         * Panel object.
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void paint(final Graphics g) {
             g.drawImage(image, 0, 0, null);

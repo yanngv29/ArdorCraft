@@ -120,9 +120,9 @@ public class LocalServerDataHandler {
 
     // private final ConcurrentMap<Pos, Chunk> chunkCache = new MapMaker().softValues().makeMap();
 
-    private boolean hasChunk(final int x, final int z) {
-        return true;// chunkCache.containsKey(new Pos(x, 0, z));
-    }
+//    private boolean hasChunk(final int x, final int z) {
+//        return true;// chunkCache.containsKey(new Pos(x, 0, z));
+//    }
 
     public synchronized Chunk getChunk(final int x, final int z) {
         // final Pos chunkPos = new Pos(x, 0, z);

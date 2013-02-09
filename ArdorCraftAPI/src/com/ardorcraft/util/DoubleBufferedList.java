@@ -40,7 +40,7 @@ public final class DoubleBufferedList<T> {
      */
     public List<T> switchAndGet() {
         if (backList.isEmpty()) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         synchronized (backList) {
             final List<T> tmp = backList;

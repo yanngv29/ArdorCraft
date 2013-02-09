@@ -38,7 +38,7 @@ public class DoubleBufferedSet<T> {
      */
     public Set<T> switchAndGet() {
         if (backSet.isEmpty()) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         synchronized (backSet) {
             final Set<T> tmp = backSet;
