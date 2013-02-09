@@ -477,8 +477,8 @@ public final class PropertiesDialog extends JDialog {
      */
     private void updateResolutionChoices() {
         if (!fullscreenBox.isSelected()) {
-            displayResCombo.setModel(new DefaultComboBoxModel(getResolutions(modes)));
-            // displayResCombo.setModel(new DefaultComboBoxModel(windowedResolutions));
+            // displayResCombo.setModel(new DefaultComboBoxModel(getResolutions(modes)));
+            displayResCombo.setModel(new DefaultComboBoxModel(windowedResolutions));
             colorDepthCombo.setModel(new DefaultComboBoxModel(new String[] { "24 bpp", "16 bpp" }));
             displayFreqCombo.setModel(new DefaultComboBoxModel(new String[] { "n/a" }));
             displayFreqCombo.setEnabled(false);
@@ -618,16 +618,16 @@ public final class PropertiesDialog extends JDialog {
         boolean ready = false, valid = true;
 
         String renderer;
-        int width, height, depth, freq, samples;
+        //int width, height, depth, freq, samples;
 
         ModeValidator(final String renderer, final int width, final int height, final int depth, final int freq,
                 final int samples) {
             this.renderer = renderer;
-            this.width = width;
-            this.height = height;
-            this.depth = depth;
-            this.freq = freq;
-            this.samples = samples;
+//            this.width = width;
+//            this.height = height;
+//            this.depth = depth;
+//            this.freq = freq;
+//            this.samples = samples;
         }
 
         public void run() {
