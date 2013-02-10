@@ -38,12 +38,40 @@ public class WalkControl {
 	private InputTrigger _keyTrigger;
 	private final LogicalLayer layer;
 	private final PlayerBase player;
+	
+    private SomeButtonsDownPredicate moveLeftPredicate;
+    private SomeButtonsDownPredicate moveRightPredicate;
+    private SomeButtonsDownPredicate moveForwardPredicate;
+    private SomeButtonsDownPredicate moveBackPredicate;
+    private SomeButtonsDownPredicate turnLeftPredicate;
+    private SomeButtonsDownPredicate turnRightPredicate;
+    private SomeButtonsDownPredicate turnUpPredicate;
+    private SomeButtonsDownPredicate turnDownPredicate;
+    private UprightFPSMoveConfig moveConfigMember;
 
 	public WalkControl(final PlayerBase player, final LogicalLayer layer,
-			final ReadOnlyVector3 upAxis) {
+			final ReadOnlyVector3 upAxis, UprightFPSMoveConfig moveConfigParam) {
 		_upAxis.set(upAxis);
 		this.layer = layer;
 		this.player = player;
+		
+        moveConfigMember = moveConfigParam;
+        moveLeftPredicate =
+                new SomeButtonsDownPredicate(moveConfigMember.MoveLeft);
+        moveRightPredicate =
+                new SomeButtonsDownPredicate(moveConfigMember.MoveRight);
+        moveForwardPredicate =
+                new SomeButtonsDownPredicate(moveConfigMember.MoveForward);
+        moveBackPredicate =
+                new SomeButtonsDownPredicate(moveConfigMember.MoveBack);
+        turnLeftPredicate =
+                new SomeButtonsDownPredicate(moveConfigMember.TurnLeft);
+        turnRightPredicate =
+                new SomeButtonsDownPredicate(moveConfigMember.TurnRight);
+        turnUpPredicate =
+                new SomeButtonsDownPredicate(moveConfigMember.TurnUp);
+        turnDownPredicate =
+                new SomeButtonsDownPredicate(moveConfigMember.TurnDown);
 	}
 
 	public ReadOnlyVector3 getUpAxis() {
@@ -78,21 +106,23 @@ public class WalkControl {
 		_keyRotateSpeed = speed;
 	}
 
-	protected void move(final KeyboardState kb, final double tpf) {
-		// MOVEMENT
-		int moveFB = 0, strafeLR = 0;
-		if (kb.isDown(Key.W)) {
-			moveFB += 1;
-		}
-		if (kb.isDown(Key.S)) {
-			moveFB -= 1;
-		}
-		if (kb.isDown(Key.A)) {
-			strafeLR += 1;
-		}
-		if (kb.isDown(Key.D)) {
-			strafeLR -= 1;
-		}
+	protected void move(
+	        final TwoInputStates state,
+	        final double tpf) {
+        // MOVEMENT
+        int moveFB = 0, strafeLR = 0;
+        if (moveForwardPredicate.apply(state)) {
+            moveFB += 1;
+        }
+        if (moveBackPredicate.apply(state)) {
+            moveFB -= 1;
+        }
+        if (moveLeftPredicate.apply(state)) {
+            strafeLR += 1;
+        }
+        if (moveRightPredicate.apply(state)) {
+            strafeLR -= 1;
+        }
 
 		if (moveFB != 0 || strafeLR != 0) {
 			final Vector3 loc = _workerStoreA.zero();
@@ -117,25 +147,20 @@ public class WalkControl {
 			// PhysicsSystem.TIMESTEP;
 		}
 
-		if (kb.isDown(Key.SPACE)) {
-			// TODO
-			// player.jump();
-		}
-
-		// ROTATION
-		int rotX = 0, rotY = 0;
-		if (kb.isDown(Key.UP)) {
-			rotY -= 1;
-		}
-		if (kb.isDown(Key.DOWN)) {
-			rotY += 1;
-		}
-		if (kb.isDown(Key.LEFT)) {
-			rotX += 1;
-		}
-		if (kb.isDown(Key.RIGHT)) {
-			rotX -= 1;
-		}
+        // ROTATION
+        int rotX = 0, rotY = 0;
+        if (turnUpPredicate.apply(state)) {
+            rotY -= 1;
+        }
+        if (turnDownPredicate.apply(state)) {
+            rotY += 1;
+        }
+        if (turnLeftPredicate.apply(state)) {
+            rotX += 1;
+        }
+        if (turnRightPredicate.apply(state)) {
+            rotX -= 1;
+        }
 		if (rotX != 0 || rotY != 0) {
 			rotate(rotX * _keyRotateSpeed / _mouseRotateSpeed * tpf, rotY
 					* _keyRotateSpeed / _mouseRotateSpeed * tpf);
@@ -183,7 +208,12 @@ public class WalkControl {
 			final LogicalLayer layer, final ReadOnlyVector3 upAxis,
 			final boolean dragOnly) {
 
-		final WalkControl control = new WalkControl(player, layer, upAxis);
+		final WalkControl control =
+		        new WalkControl(
+		                        player,
+		                        layer,
+		                        upAxis,
+		                        new UprightFPSMoveConfig(UprightFPSMoveConfig.defaultControls.LeftHanded));
 		control.setupKeyboardTriggers(layer);
 		control.setupMouseTriggers(layer, dragOnly);
 		return control;
@@ -247,30 +277,17 @@ public class WalkControl {
 
 		final WalkControl control = this;
 
-		// WASD control
-		final Predicate<TwoInputStates> keysHeld = new Predicate<TwoInputStates>() {
-			Key[] keys = new Key[] { Key.W, Key.A, Key.S, Key.D, Key.LEFT,
-					Key.RIGHT, Key.UP, Key.DOWN, Key.SPACE };
+        // WASD control
+        final Predicate<TwoInputStates> keysHeld =
+                Predicates.or(moveConfigMember.createKeysDownPredicates());
 
-			@Override
-			public boolean apply(final TwoInputStates states) {
-				for (final Key k : keys) {
-					if (states.getCurrent() != null
-							&& states.getCurrent().getKeyboardState().isDown(k)) {
-						return true;
-					}
-				}
-				return false;
-			}
-		};
-
-		final TriggerAction moveAction = new TriggerAction() {
-			@Override
-			public void perform(final Canvas source,
-					final TwoInputStates inputStates, final double tpf) {
-				control.move(inputStates.getCurrent().getKeyboardState(), tpf);
-			}
-		};
+        final TriggerAction moveAction = new TriggerAction() {
+            @Override
+            public void perform(final Canvas source,
+                    final TwoInputStates inputStates, final double tpf) {
+                control.move(inputStates, tpf);
+            }
+        };
 		_keyTrigger = new InputTrigger(keysHeld, moveAction);
 		layer.registerTrigger(_keyTrigger);
 		return keysHeld;
