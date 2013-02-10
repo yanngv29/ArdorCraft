@@ -11,8 +11,8 @@
 package com.ardorcraft.control;
 
 import com.ardor3d.framework.Canvas;
-import com.ardor3d.input.Key;
-import com.ardor3d.input.KeyboardState;
+//import com.ardor3d.input.Key;
+//import com.ardor3d.input.KeyboardState;
 import com.ardor3d.input.MouseState;
 import com.ardor3d.input.logical.InputTrigger;
 import com.ardor3d.input.logical.LogicalLayer;
