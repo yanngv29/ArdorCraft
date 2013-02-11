@@ -195,15 +195,8 @@ public class UprightFlyControlTriggers implements ITriggerGroup
     @Override
     public void AddToLayer(LogicalLayer layer)
     {
-        if(!layer.getTriggers().contains(moveTrigger))
-        {
-            layer.registerTrigger(moveTrigger);
-        }
-        
-        if(!layer.getTriggers().contains(turnTrigger))
-        {
-            layer.registerTrigger(turnTrigger);
-        }
+        layer.registerTrigger(moveTrigger);
+        layer.registerTrigger(turnTrigger);
     }
 
     /**
@@ -212,15 +205,8 @@ public class UprightFlyControlTriggers implements ITriggerGroup
     @Override
     public void RemoveFromLayer(LogicalLayer layer)
     {
-        if(layer.getTriggers().contains(moveTrigger))
-        {
-            layer.deregisterTrigger(moveTrigger);
-        }
-        
-        if(layer.getTriggers().contains(turnTrigger))
-        {
-            layer.deregisterTrigger(turnTrigger);
-        }
+        layer.deregisterTrigger(moveTrigger);
+        layer.deregisterTrigger(turnTrigger);
     }
 
     /**
@@ -352,6 +338,7 @@ public class UprightFlyControlTriggers implements ITriggerGroup
         }
 
         player.normalize();
+        
     }
 
 }
